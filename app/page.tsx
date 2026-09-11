@@ -68,7 +68,7 @@ export default function Home() {
     } catch (error) {
       setRows(fallbackData);
       setDataMode('demo');
-      setLastUpdated(error instanceof Error ? `Demo — ${error.message}` : 'Data contoh — koneksi OneDrive belum dikonfigurasi');
+      setLastUpdated(error instanceof Error ? `Demo — ${error.message}` : 'Data contoh — koneksi Google Sheets belum dikonfigurasi');
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export default function Home() {
         </div>
         <div className="status-wrap">
           <span className={`status-dot ${dataMode}`} />
-          <span>{dataMode === 'live' ? 'Live dari OneDrive' : 'Demo data'}</span>
+          <span>{dataMode === 'live' ? 'Live dari Google Sheets' : 'Demo data'}</span>
         </div>
       </section>
 
