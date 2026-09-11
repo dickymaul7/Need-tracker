@@ -35,6 +35,11 @@ function countBy(rows: NeedRow[], key: 'source' | 'brand') {
   ).sort((a, b) => b[1] - a[1]);
 }
 
+function rangeFromRows(rows: NeedRow[]) {
+  const dates = rows.map((row) => row.date).filter(Boolean).sort();
+  return dates.length ? { start: dates[0], end: dates[dates.length - 1] } : null;
+}
+
 export default function Home() {
   const [rows, setRows] = useState<NeedRow[]>(fallbackData);
   const [dataMode, setDataMode] = useState<'live' | 'demo'>('demo');
@@ -47,17 +52,23 @@ export default function Home() {
     setLoading(true);
     try {
       const res = await fetch('/api/needs', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Live source belum tersedia');
       const payload = await res.json();
+      if (!res.ok) throw new Error(payload?.error || 'Live source belum tersedia');
+
       if (Array.isArray(payload.rows) && payload.rows.length) {
         setRows(payload.rows);
+        const range = rangeFromRows(payload.rows);
+        if (range) {
+          setStartDate(range.start);
+          setEndDate(range.end);
+        }
         setDataMode('live');
         setLastUpdated(new Date().toLocaleString('id-ID'));
       }
-    } catch {
+    } catch (error) {
       setRows(fallbackData);
       setDataMode('demo');
-      setLastUpdated('Data contoh — koneksi OneDrive belum dikonfigurasi');
+      setLastUpdated(error instanceof Error ? `Demo — ${error.message}` : 'Data contoh — koneksi OneDrive belum dikonfigurasi');
     } finally {
       setLoading(false);
     }
