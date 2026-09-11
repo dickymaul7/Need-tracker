@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Needs Tracking Dashboard</title>
+<style>
+:root{--ink:#171717;--muted:#6d6d73;--line:#e9e9ec;--paper:#fff;--wash:#f7f7f8;--maroon:#8f1735;--green:#15803d}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--wash);color:var(--ink)} button,input{font:inherit}
+.shell{max-width:1180px;margin:auto;padding:36px 28px 64px}.hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:26px}
+.eyebrow,.kicker{margin:0 0 8px;color:var(--maroon);font-size:12px;font-weight:800;letter-spacing:.12em}h1{margin:0;font-size:clamp(32px,5vw,52px);line-height:1.02;letter-spacing:-.04em}.sub{max-width:720px;margin:14px 0 0;color:var(--muted);line-height:1.65}
+.status{display:flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:13px;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:#bbb}.dot.live{background:var(--green)}
+.filters{display:grid;grid-template-columns:1fr 1fr auto minmax(190px,1fr);gap:16px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,.035)}
+.group{display:grid;gap:7px}.group label{font-size:12px;color:var(--muted);font-weight:700}.group input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff}.btn{border:0;background:var(--maroon);color:#fff;padding:13px 18px;border-radius:12px;font-weight:800;cursor:pointer}.updated{font-size:11px;line-height:1.55;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:16px;margin:16px 0}.kpi{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:5px;min-height:150px;align-content:center}.kpi span{color:var(--muted);font-size:13px;font-weight:700}.kpi strong{font-size:44px;letter-spacing:-.04em}.kpi small{color:var(--muted)}.kpi.primary{background:var(--maroon);color:#fff;border-color:var(--maroon)}.kpi.primary span,.kpi.primary small{color:rgba(255,255,255,.78)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel,.tablePanel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px}.tablePanel{margin-top:16px}.head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px}.head h2{margin:0;font-size:21px}.head>span{color:var(--muted);font-size:12px}.bars{display:grid;gap:18px}.label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;font-size:13px}.label span{font-weight:700}.label strong{color:var(--maroon)}.track{height:10px;background:#efeff2;border-radius:999px;overflow:hidden}.fill{height:100%;background:var(--maroon);border-radius:999px;min-width:8px}.fill.dark{background:#2f3138}.empty{color:var(--muted);font-size:13px}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:12px 10px;border-bottom:1px solid var(--line)}td{padding:14px 10px;border-bottom:1px solid #f0f0f2}tbody tr:last-child td{border-bottom:0}
+@media(max-width:840px){.filters{grid-template-columns:1fr 1fr}.updated{grid-column:1/-1}.kpis{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding:24px 16px 48px}.hero{flex-direction:column}.filters{grid-template-columns:1fr}.updated{grid-column:auto}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="hero"><div><p class="eyebrow">PROXSIS • NEED MONITORING</p><h1>Needs Tracking Dashboard</h1><p class="sub">Pantau jumlah kebutuhan berdasarkan periode, sumber need, dan brand dalam satu tampilan sederhana.</p></div><div class="status"><span class="dot"></span><span>Demo data</span></div></section>
+<section class="filters"><div class="group"><label>Tanggal mulai</label><input id="start" type="date" value="2026-09-01"></div><div class="group"><label>Tanggal akhir</label><input id="end" type="date" value="2026-09-11"></div><button class="btn" id="refresh">Refresh data</button><div class="updated">Status data<br><strong id="updated">Data contoh — koneksi OneDrive belum dikonfigurasi</strong></div></section>
+<section class="kpis"><article class="kpi primary"><span>Total Need</span><strong id="total">0</strong><small id="period"></small></article><article class="kpi"><span>Sumber Need Aktif</span><strong id="sources">0</strong><small>pada periode terpilih</small></article><article class="kpi"><span>Brand Aktif</span><strong id="brands">0</strong><small>pada periode terpilih</small></article></section>
+<section class="grid"><article class="panel"><div class="head"><div><p class="kicker">BREAKDOWN</p><h2>Sumber Need</h2></div><span id="sourceTotal"></span></div><div id="sourceBars" class="bars"></div></article><article class="panel"><div class="head"><div><p class="kicker">BREAKDOWN</p><h2>Brand</h2></div><span id="brandTotal"></span></div><div id="brandBars" class="bars"></div></article></section>
+<section class="tablePanel"><div class="head"><div><p class="kicker">DATA DETAIL</p><h2>Needs dalam periode terpilih</h2></div></div><div class="wrap"><table><thead><tr><th>Tanggal</th><th>Sumber Need</th><th>Brand</th></tr></thead><tbody id="tbody"></tbody></table></div></section>
+</main>
+<script>
+const rows=[
+['2026-09-01','Database','Proxsis Academy'],['2026-09-01','Database','ISO Center Indonesia'],['2026-09-02','Referral','Proxsis Academy'],['2026-09-02','Website','GRC Indonesia'],['2026-09-03','Database','Proxsis Academy'],['2026-09-03','Community','ICICERT Indonesia'],['2026-09-04','Database','ISO Center Indonesia'],['2026-09-05','Referral','GRC Indonesia'],['2026-09-05','Database','Proxsis Academy'],['2026-09-06','Website','Proxsis Academy'],['2026-09-07','Database','ICICERT Indonesia'],['2026-09-08','Database','Proxsis Academy'],['2026-09-09','Community','GRC Indonesia'],['2026-09-10','Database','ISO Center Indonesia'],['2026-09-11','Referral','Proxsis Academy']
+].map(([date,source,brand])=>({date,source,brand}));
+const $=id=>document.getElementById(id); const count=(arr,key)=>Object.entries(arr.reduce((a,r)=>(a[r[key]]=(a[r[key]]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]);
+function bars(entries,max,dark=false){if(!entries.length)return '<p class="empty">Tidak ada data pada periode ini.</p>';return entries.map(([n,c])=>`<div><div class="label"><span>${n}</span><strong>${c}</strong></div><div class="track"><div class="fill ${dark?'dark':''}" style="width:${Math.max(8,c/max*100)}%"></div></div></div>`).join('')}
+function render(){const s=$('start').value,e=$('end').value,f=rows.filter(r=>r.date>=s&&r.date<=e),bs=count(f,'source'),bb=count(f,'brand');$('total').textContent=f.length;$('sources').textContent=bs.length;$('brands').textContent=bb.length;$('period').textContent=`${s} s.d. ${e}`;$('sourceTotal').textContent=`${f.length} total`;$('brandTotal').textContent=`${bb.length} brand`;$('sourceBars').innerHTML=bars(bs,Math.max(1,...bs.map(x=>x[1])));$('brandBars').innerHTML=bars(bb,Math.max(1,...bb.map(x=>x[1])),true);$('tbody').innerHTML=f.slice().reverse().map(r=>`<tr><td>${new Date(r.date+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}</td><td>${r.source}</td><td>${r.brand}</td></tr>`).join('')}
+$('start').addEventListener('change',render);$('end').addEventListener('change',render);$('refresh').addEventListener('click',()=>{render();$('updated').textContent='Data contoh diperbarui '+new Date().toLocaleString('id-ID')});render();
+</script>
+</body></html>
